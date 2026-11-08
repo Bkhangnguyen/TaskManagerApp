@@ -52,9 +52,9 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.btnRegister.setOnClickListener {
-            val email = binding.etEmail.text?.toString()?.trim().orEmpty()
-            val pass = binding.etPassword.text?.toString()?.trim().orEmpty()
-            authViewModel.register(email, pass)
+            // Mở màn hình Đăng ký tài khoản riêng biệt
+            val intent = Intent(this, RegisterActivity::class.java)
+            startActivity(intent)
         }
 
         // Đăng nhập nhanh quyền Admin (Trưởng nhóm)
