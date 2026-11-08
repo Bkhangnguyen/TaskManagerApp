@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.taskmanager.R
 import com.example.taskmanager.adapter.TaskAdapter
 import com.example.taskmanager.data.remote.Resource
+import com.example.taskmanager.data.security.SecurityPrefManager
 import com.example.taskmanager.databinding.FragmentTaskListBinding
 import com.example.taskmanager.viewmodel.TaskViewModel
 import kotlinx.coroutines.launch
@@ -51,12 +52,28 @@ class TaskListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+        val securityPref = SecurityPrefManager(requireContext())
+        val isAdmin = securityPref.isAdmin()
+
         adapter = TaskAdapter(
             onStatusClick = { task ->
                 viewModel.toggleTaskStatus(task.id, task.status)
             },
             onTaskClick = { task ->
-                Toast.makeText(requireContext(), "${task.title}: ${task.description}", Toast.LENGTH_SHORT).show()
+                if (isAdmin) {
+                    // Admin có thể xóa task hoặc xem chi tiết
+                    android.app.AlertDialog.Builder(requireContext())
+                        .setTitle(task.title)
+                        .setMessage("${task.description}\n\nNgười nhận: ${task.assignee}\nTrạng thái: ${task.status}")
+                        .setPositiveButton("Đóng", null)
+                        .setNegativeButton("Xóa task này") { _, _ ->
+                            viewModel.deleteTask(task.id)
+                            Toast.makeText(requireContext(), "Đã xóa công việc", Toast.LENGTH_SHORT).show()
+                        }
+                        .show()
+                } else {
+                    Toast.makeText(requireContext(), "${task.title}: ${task.description}", Toast.LENGTH_SHORT).show()
+                }
             }
         )
         binding.rvTasks.layoutManager = LinearLayoutManager(requireContext())
@@ -64,6 +81,11 @@ class TaskListFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        val securityPref = SecurityPrefManager(requireContext())
+        val isAdmin = securityPref.isAdmin()
+
+        // Phân quyền: Chỉ Admin mới thấy nút tạo công việc (+)
+        binding.fabAddTask.visibility = if (isAdmin) View.VISIBLE else View.GONE
         // Lắng nghe tìm kiếm theo thời gian thực
         binding.etSearch.addTextChangedListener { text ->
             viewModel.searchTasks(text?.toString().orEmpty())

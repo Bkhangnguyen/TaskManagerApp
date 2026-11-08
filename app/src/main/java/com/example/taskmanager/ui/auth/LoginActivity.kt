@@ -57,10 +57,26 @@ class LoginActivity : AppCompatActivity() {
             authViewModel.register(email, pass)
         }
 
+        // Đăng nhập nhanh quyền Admin (Trưởng nhóm)
+        binding.btnQuickAdmin.setOnClickListener {
+            val securityPref = SecurityPrefManager(applicationContext)
+            securityPref.saveUserSession("admin@taskmanager.com", "admin_uid_001", "ADMIN")
+            Toast.makeText(this, "Đã đăng nhập với tư cách: Quản trị viên (Admin)", Toast.LENGTH_SHORT).show()
+            navigateToMain()
+        }
+
+        // Đăng nhập nhanh quyền Thành viên (Member)
+        binding.btnQuickMember.setOnClickListener {
+            val securityPref = SecurityPrefManager(applicationContext)
+            securityPref.saveUserSession("member@taskmanager.com", "member_uid_002", "MEMBER")
+            Toast.makeText(this, "Đã đăng nhập với tư cách: Thành viên dự án", Toast.LENGTH_SHORT).show()
+            navigateToMain()
+        }
+
         // Hỗ trợ kiểm thử Offline Mode (Chế độ máy bay) khi không có mạng Internet để kết nối Firebase
         binding.btnBypassOffline.setOnClickListener {
             val securityPref = SecurityPrefManager(applicationContext)
-            securityPref.saveUserSession("offline_user@taskmanager.local", "offline_uid")
+            securityPref.saveUserSession("offline_user@taskmanager.local", "offline_uid", "ADMIN")
             navigateToMain()
         }
     }

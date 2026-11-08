@@ -97,6 +97,13 @@ class TaskViewModel(
         }
     }
 
+    // Xóa công việc (Quyền Admin)
+    fun deleteTask(taskId: Int) {
+        viewModelScope.launch {
+            repository.deleteTask(taskId)
+        }
+    }
+
     class Factory(private val repository: TaskRepository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {

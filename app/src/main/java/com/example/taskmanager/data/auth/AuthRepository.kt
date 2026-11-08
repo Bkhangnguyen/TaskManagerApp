@@ -24,7 +24,8 @@ class AuthRepository(
             val result = firebaseAuth.signInWithEmailAndPassword(email, pass).await()
             val user = result.user
             if (user != null) {
-                securityPrefManager.saveUserSession(user.email.orEmpty(), user.uid)
+                val role = if (email.startsWith("admin", ignoreCase = true)) "ADMIN" else "MEMBER"
+                securityPrefManager.saveUserSession(user.email.orEmpty(), user.uid, role)
                 Resource.Success(user)
             } else {
                 Resource.Error("Đăng nhập thất bại. Người dùng không tồn tại.")
@@ -39,7 +40,8 @@ class AuthRepository(
             val result = firebaseAuth.createUserWithEmailAndPassword(email, pass).await()
             val user = result.user
             if (user != null) {
-                securityPrefManager.saveUserSession(user.email.orEmpty(), user.uid)
+                val role = if (email.startsWith("admin", ignoreCase = true)) "ADMIN" else "MEMBER"
+                securityPrefManager.saveUserSession(user.email.orEmpty(), user.uid, role)
                 Resource.Success(user)
             } else {
                 Resource.Error("Đăng ký thất bại.")

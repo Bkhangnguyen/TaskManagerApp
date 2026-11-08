@@ -130,14 +130,38 @@
                     android:text="Tạo tài khoản mới"
                     android:textSize="16sp" />
 
+                <!-- Quick Login Role Buttons (Phân quyền Admin vs Member) -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="— Hoặc đăng nhập nhanh demo —"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnQuickAdmin"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="👑 Đăng nhập quyền Admin (Trưởng nhóm)" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnQuickMember"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="👤 Đăng nhập quyền Thành viên (Member)" />
+
                 <!-- Quick Offline Bypass Button -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnBypassOffline"
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Duyệt nhanh chế độ Offline (Room DB)"
+                    android:text="✈️ Duyệt nhanh Offline (Airplane Mode Test)"
                     android:textColor="@color/text_secondary" />
 
             </LinearLayout>

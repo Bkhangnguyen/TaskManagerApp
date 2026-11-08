@@ -19,15 +19,20 @@ class SecurityPrefManager(context: Context) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-    fun saveUserSession(email: String, uid: String) {
+    fun saveUserSession(email: String, uid: String, role: String = "MEMBER") {
         sharedPreferences.edit()
             .putString("USER_EMAIL", email)
             .putString("USER_UID", uid)
+            .putString("USER_ROLE", role)
             .putBoolean("IS_LOGGED_IN", true)
             .apply()
     }
 
     fun getUserEmail(): String? = sharedPreferences.getString("USER_EMAIL", null)
+
+    fun getUserRole(): String = sharedPreferences.getString("USER_ROLE", "MEMBER") ?: "MEMBER"
+
+    fun isAdmin(): Boolean = getUserRole().equals("ADMIN", ignoreCase = true)
 
     fun isLoggedIn(): Boolean = sharedPreferences.getBoolean("IS_LOGGED_IN", false)
 

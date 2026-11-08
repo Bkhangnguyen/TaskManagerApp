@@ -38,8 +38,11 @@ class ProfileFragment : Fragment() {
 
         // Hiển thị email đã đăng nhập từ Firebase hoặc EncryptedSharedPreferences
         val email = authRepository.currentUser?.email ?: securityPref.getUserEmail() ?: "user@taskmanager.com"
+        val role = securityPref.getUserRole()
+        val roleLabel = if (securityPref.isAdmin()) "👑 Quản trị viên (Trưởng nhóm / PM)" else "👤 Thành viên dự án (Member)"
+
         binding.tvProfileName.text = email.substringBefore("@")
-        binding.tvProfileRole.text = email
+        binding.tvProfileRole.text = "$roleLabel\n$email"
 
         // Milestone 5: Tải ảnh avatar bất đồng bộ mượt mà bằng thư viện Glide
         val avatarUrl = "https://picsum.photos/300/300"
