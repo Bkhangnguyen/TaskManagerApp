@@ -69,7 +69,7 @@ class ProfileFragment : Fragment() {
 
         // 4. Mở hộp thoại Quản lý Dự án & Mã mời
         binding.btnOpenProjectManage.setOnClickListener {
-            val dialog = ProjectManageDialog { updatedProjectName ->
+            val dialog = ProjectManageDialog { updatedProjectName, _ ->
                 binding.tvCurrentProjectProfile.text = "Dự án: $updatedProjectName"
             }
             dialog.show(childFragmentManager, "ProjectManageDialog")
