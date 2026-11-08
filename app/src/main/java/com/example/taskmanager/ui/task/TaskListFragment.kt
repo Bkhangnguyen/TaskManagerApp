@@ -14,6 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.taskmanager.R
 import com.example.taskmanager.adapter.TaskAdapter
+import com.example.taskmanager.data.remote.Resource
 import com.example.taskmanager.databinding.FragmentTaskListBinding
 import com.example.taskmanager.viewmodel.TaskViewModel
 import kotlinx.coroutines.launch
@@ -44,6 +45,9 @@ class TaskListFragment : Fragment() {
         setupRecyclerView()
         setupListeners()
         observeViewModel()
+
+        // Kích hoạt đồng bộ REST API qua Coroutines Dispatchers.IO
+        viewModel.fetchTasksFromApi()
     }
 
     private fun setupRecyclerView() {
@@ -82,14 +86,43 @@ class TaskListFragment : Fragment() {
             val dialog = AddTaskDialogFragment()
             dialog.show(childFragmentManager, "AddTaskDialog")
         }
+
+        // Nút thử lại khi gặp lỗi kết nối API
+        binding.btnRetry.setOnClickListener {
+            viewModel.fetchTasksFromApi()
+        }
     }
 
     private fun observeViewModel() {
+        // Quan sát danh sách công việc tự động cập nhật
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.filteredTasks.collect { tasks ->
                     adapter.submitList(tasks)
                     binding.tvEmpty.visibility = if (tasks.isEmpty()) View.VISIBLE else View.GONE
+                }
+            }
+        }
+
+        // Milestone 4: Quản lý 3 trạng thái Resource State (Loading, Success, Error)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.resourceState.collect { state ->
+                    when (state) {
+                        is Resource.Loading -> {
+                            binding.progressBar.visibility = View.VISIBLE
+                            binding.layoutError.visibility = View.GONE
+                        }
+                        is Resource.Success -> {
+                            binding.progressBar.visibility = View.GONE
+                            binding.layoutError.visibility = View.GONE
+                        }
+                        is Resource.Error -> {
+                            binding.progressBar.visibility = View.GONE
+                            binding.layoutError.visibility = View.VISIBLE
+                            binding.tvErrorMessage.text = state.message
+                        }
+                    }
                 }
             }
         }

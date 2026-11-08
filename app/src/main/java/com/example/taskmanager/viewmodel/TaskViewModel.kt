@@ -3,11 +3,13 @@ package com.example.taskmanager.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.taskmanager.data.remote.Resource
 import com.example.taskmanager.model.Task
 import com.example.taskmanager.repository.TaskRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -15,6 +17,10 @@ import kotlinx.coroutines.launch
 class TaskViewModel(
     private val repository: TaskRepository
 ) : ViewModel() {
+
+    // Milestone 4: Quản lý 3 trạng thái Resource State (Loading, Success, Error)
+    private val _resourceState = MutableStateFlow<Resource<List<Task>>>(Resource.Success(emptyList()))
+    val resourceState: StateFlow<Resource<List<Task>>> = _resourceState.asStateFlow()
 
     // Bộ lọc trạng thái hiện tại (Tất cả, Cần làm, Đang làm, Cần chỉnh sửa, Hoàn thành)
     private val _selectedStatus = MutableStateFlow("Tất cả")
@@ -47,6 +53,15 @@ class TaskViewModel(
 
     fun filterByStatus(status: String) {
         _selectedStatus.value = status
+    }
+
+    // Milestone 4: Kéo dữ liệu qua Retrofit 2 với Coroutines Dispatchers.IO và phát trạng thái Resource
+    fun fetchTasksFromApi() {
+        viewModelScope.launch {
+            repository.syncTasksFromApi().collect { resource ->
+                _resourceState.value = resource
+            }
+        }
     }
 
     fun searchTasks(query: String) {
