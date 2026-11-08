@@ -95,6 +95,14 @@ class LoginActivity : AppCompatActivity() {
                             binding.progressBarAuth.visibility = View.GONE
                             binding.btnLogin.isEnabled = true
                             binding.btnRegister.isEnabled = true
+
+                            // Cập nhật thời gian đăng nhập cuối
+                            val app = application as TaskManagerApp
+                            val email = binding.etEmail.text?.toString()?.trim().orEmpty()
+                            lifecycleScope.launch {
+                                app.userAccountDao.updateLastLogin(email, System.currentTimeMillis())
+                            }
+
                             Toast.makeText(this@LoginActivity, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show()
                             navigateToMain()
                         }

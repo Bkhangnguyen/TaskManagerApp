@@ -80,6 +80,25 @@ class RegisterActivity : AppCompatActivity() {
                         is Resource.Success -> {
                             binding.progressBarRegister.visibility = View.GONE
                             binding.btnSubmitRegister.isEnabled = true
+
+                            // Ghi nhận tài khoản vào CSDL người dùng (Hỗ trợ Admin theo dõi & Xuất CSV)
+                            val app = application as TaskManagerApp
+                            val now = System.currentTimeMillis()
+                            val fullName = binding.etFullName.text?.toString()?.trim().orEmpty()
+                            val email = binding.etRegisterEmail.text?.toString()?.trim().orEmpty()
+                            lifecycleScope.launch {
+                                app.userAccountDao.insertOrUpdate(
+                                    com.example.taskmanager.data.local.entity.UserAccountEntity(
+                                        email = email,
+                                        fullName = fullName,
+                                        role = if (email.startsWith("admin", ignoreCase = true)) "ADMIN" else "MEMBER",
+                                        registeredAt = now,
+                                        lastLoginAt = now,
+                                        currentProjectName = "Chưa tham gia dự án (Cần nhập mã mời)"
+                                    )
+                                )
+                            }
+
                             Toast.makeText(this@RegisterActivity, "Đăng ký tài khoản thành công!", Toast.LENGTH_SHORT).show()
                             val intent = Intent(this@RegisterActivity, MainActivity::class.java).apply {
                                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

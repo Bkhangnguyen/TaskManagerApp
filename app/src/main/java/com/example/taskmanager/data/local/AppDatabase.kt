@@ -7,12 +7,16 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.taskmanager.data.local.dao.CategoryDao
 import com.example.taskmanager.data.local.dao.MemberDao
+import com.example.taskmanager.data.local.dao.ProjectDao
 import com.example.taskmanager.data.local.dao.TaskDao
 import com.example.taskmanager.data.local.dao.TaskResultDao
+import com.example.taskmanager.data.local.dao.UserAccountDao
 import com.example.taskmanager.data.local.entity.CategoryEntity
 import com.example.taskmanager.data.local.entity.MemberEntity
+import com.example.taskmanager.data.local.entity.ProjectEntity
 import com.example.taskmanager.data.local.entity.TaskEntity
 import com.example.taskmanager.data.local.entity.TaskResultEntity
+import com.example.taskmanager.data.local.entity.UserAccountEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,9 +26,11 @@ import kotlinx.coroutines.launch
         TaskEntity::class,
         CategoryEntity::class,
         MemberEntity::class,
-        TaskResultEntity::class
+        TaskResultEntity::class,
+        ProjectEntity::class,
+        UserAccountEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -33,13 +39,13 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun memberDao(): MemberDao
     abstract fun taskResultDao(): TaskResultDao
+    abstract fun projectDao(): ProjectDao
+    abstract fun userAccountDao(): UserAccountDao
 
     companion object {
-        // @Volatile đảm bảo giá trị của INSTANCE luôn được cập nhật đồng bộ giữa các luồng (Thread)
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
-        // Singleton Pattern với khối synchronized đảm bảo chỉ có duy nhất 1 phiên kết nối Database
         fun getDatabase(context: Context, scope: CoroutineScope? = null): AppDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -55,7 +61,6 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        // Tự động nạp trước dữ liệu mẫu ban đầu từ bảng Airtable khi khởi tạo DB lần đầu
         private class DatabaseCallback(
             private val scope: CoroutineScope
         ) : RoomDatabase.Callback() {
@@ -72,8 +77,71 @@ abstract class AppDatabase : RoomDatabase() {
                 val taskDao = database.taskDao()
                 val categoryDao = database.categoryDao()
                 val memberDao = database.memberDao()
+                val projectDao = database.projectDao()
+                val userAccountDao = database.userAccountDao()
 
-                // 1. Nạp danh mục (Categories)
+                // 1. Nạp dự án ban đầu với mã mời
+                projectDao.insertAll(
+                    listOf(
+                        ProjectEntity(
+                            id = 1,
+                            name = "TMDT PM: Bán Digital Art",
+                            description = "Dự án phát triển website và ứng dụng bán tranh nghệ thuật Digital Art",
+                            inviteCode = "TMDT2026",
+                            ownerEmail = "admin@taskmanager.com",
+                            isPersonal = false
+                        ),
+                        ProjectEntity(
+                            id = 2,
+                            name = "Dự án Cá nhân Mẫu",
+                            description = "Không gian quản lý công việc riêng của chính bạn",
+                            inviteCode = "MYTASK",
+                            ownerEmail = "khang@taskmanager.com",
+                            isPersonal = true
+                        )
+                    )
+                )
+
+                // 2. Nạp danh sách tài khoản đã đăng ký ban đầu cho Admin theo dõi
+                val now = System.currentTimeMillis()
+                userAccountDao.insertAll(
+                    listOf(
+                        UserAccountEntity(
+                            email = "admin@taskmanager.com",
+                            fullName = "Quản trị viên Hệ thống",
+                            role = "ADMIN",
+                            registeredAt = now - 86400000L * 7,
+                            lastLoginAt = now,
+                            currentProjectName = "TMDT PM: Bán Digital Art"
+                        ),
+                        UserAccountEntity(
+                            email = "duong@taskmanager.com",
+                            fullName = "Nguyễn Văn Dương",
+                            role = "MEMBER",
+                            registeredAt = now - 86400000L * 5,
+                            lastLoginAt = now - 3600000L * 2,
+                            currentProjectName = "TMDT PM: Bán Digital Art"
+                        ),
+                        UserAccountEntity(
+                            email = "khang@taskmanager.com",
+                            fullName = "Bùi Khang Nguyên",
+                            role = "MEMBER",
+                            registeredAt = now - 86400000L * 4,
+                            lastLoginAt = now - 1800000L,
+                            currentProjectName = "TMDT PM: Bán Digital Art"
+                        ),
+                        UserAccountEntity(
+                            email = "duy@taskmanager.com",
+                            fullName = "Trần Hoàng Duy",
+                            role = "MEMBER",
+                            registeredAt = now - 86400000L * 3,
+                            lastLoginAt = now - 7200000L,
+                            currentProjectName = "TMDT PM: Bán Digital Art"
+                        )
+                    )
+                )
+
+                // 3. Nạp danh mục (Categories)
                 categoryDao.insertAll(
                     listOf(
                         CategoryEntity(name = "Báo cáo", colorHex = "#3B82F6"),
@@ -87,7 +155,7 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                 )
 
-                // 2. Nạp thành viên (3 thành viên: Dương, Khang, Duy)
+                // 4. Nạp thành viên (3 thành viên: Dương, Khang, Duy)
                 memberDao.insertAll(
                     listOf(
                         MemberEntity(name = "Dương", role = "Trưởng nhóm / Task Core & DB", tagColorHex = "#0F766E"),
@@ -96,7 +164,7 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                 )
 
-                // 3. Nạp 9 công việc mẫu chuẩn theo bảng Airtable
+                // 5. Nạp 9 công việc mẫu chuẩn theo bảng Airtable
                 taskDao.insertAll(
                     listOf(
                         TaskEntity(

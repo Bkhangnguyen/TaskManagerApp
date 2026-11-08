@@ -17,4 +17,6 @@ class TaskManagerApp : Application() {
     }
     val categoryRepository: CategoryRepository by lazy { CategoryRepository(database.categoryDao()) }
     val memberRepository: MemberRepository by lazy { MemberRepository(database.memberDao()) }
+    val projectDao by lazy { database.projectDao() }
+    val userAccountDao by lazy { database.userAccountDao() }
 }

@@ -38,15 +38,16 @@
             android:id="@+id/tvProfileRole"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="Trưởng nhóm (Project Manager)"
             android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
-        <!-- Info Card -->
+        <!-- Info Card: Dự án hiện tại & Chế độ làm việc -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="20dp"
             app:cardCornerRadius="12dp"
             app:strokeColor="@color/border"
             app:strokeWidth="1dp">
@@ -60,43 +61,101 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Thông tin đồ án"
+                    android:text="Không gian làm việc"
                     android:textColor="@color/primary"
                     android:textStyle="bold"
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/tvCurrentProjectProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Dự án: App Phân Công Task (TMDT PM)"
-                    android:textColor="@color/text_primary" />
+                    android:text="Dự án: TMDT PM: Bán Digital Art"
+                    android:textColor="@color/text_primary"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Kiến trúc: MVVM + ViewBinding + Room DB"
+                    android:text="Mã mời dự án mẫu: TMDT2026"
                     android:textColor="@color/text_secondary" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOpenProjectManage"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Chế độ: Offline-First (Room Database)"
-                    android:textColor="@color/text_secondary" />
+                    android:layout_marginTop="12dp"
+                    android:text="📁 Đổi Dự Án / Nhập Mã Mời / Tạo Nhóm" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Logout Button (Milestone 5) -->
+        <!-- Card Cài đặt & Tiện ích (Dark Mode & Admin Features) -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            app:cardCornerRadius="12dp"
+            app:strokeColor="@color/border"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Dark Mode Toggle Switch -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🌙 Chế độ giao diện Tối (Dark Mode)"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchDarkMode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="12dp"
+                    android:background="@color/border" />
+
+                <!-- Admin Only Button: Quản trị tài khoản & Xuất CSV -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAdminAccounts"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="👑 Quản Trị Tài Khoản &amp; Xuất File CSV"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Logout Button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogout"
-            style="@style/Widget.Material3.Button.OutlinedButton"
+            style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:textColor="#DC2626"
-            app:strokeColor="#DC2626"
             android:text="Đăng xuất tài khoản" />
 
     </LinearLayout>

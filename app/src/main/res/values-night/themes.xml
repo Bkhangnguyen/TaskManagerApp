@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.TaskManagerApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#3B82F6</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="android:statusBarColor">#0F172A</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

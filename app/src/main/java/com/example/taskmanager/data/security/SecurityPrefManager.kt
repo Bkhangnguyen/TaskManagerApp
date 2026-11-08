@@ -34,6 +34,18 @@ class SecurityPrefManager(context: Context) {
 
     fun isAdmin(): Boolean = getUserRole().equals("ADMIN", ignoreCase = true)
 
+    fun getCurrentProject(): String = sharedPreferences.getString("CURRENT_PROJECT", "TMDT PM: Bán Digital Art") ?: "TMDT PM: Bán Digital Art"
+
+    fun setCurrentProject(name: String) {
+        sharedPreferences.edit().putString("CURRENT_PROJECT", name).apply()
+    }
+
+    fun isDarkMode(): Boolean = sharedPreferences.getBoolean("DARK_MODE", false)
+
+    fun setDarkMode(enabled: Boolean) {
+        sharedPreferences.edit().putBoolean("DARK_MODE", enabled).apply()
+    }
+
     fun isLoggedIn(): Boolean = sharedPreferences.getBoolean("IS_LOGGED_IN", false)
 
     fun clearSession() {

@@ -84,6 +84,18 @@ class TaskListFragment : Fragment() {
         val securityPref = SecurityPrefManager(requireContext())
         val isAdmin = securityPref.isAdmin()
 
+        // Hiển thị tên dự án hiện tại trên banner
+        binding.tvActiveProjectName.text = "📁 ${securityPref.getCurrentProject()}"
+
+        // Bấm đổi dự án / nhập mã mời / tạo nhóm
+        binding.btnSwitchProject.setOnClickListener {
+            val dialog = com.example.taskmanager.ui.project.ProjectManageDialog { newProjectName ->
+                binding.tvActiveProjectName.text = "📁 $newProjectName"
+                (activity as? com.example.taskmanager.MainActivity)?.updateProjectSubtitle(newProjectName)
+            }
+            dialog.show(childFragmentManager, "ProjectManageDialog")
+        }
+
         // Phân quyền: Chỉ Admin mới thấy nút tạo công việc (+)
         binding.fabAddTask.visibility = if (isAdmin) View.VISIBLE else View.GONE
         // Lắng nghe tìm kiếm theo thời gian thực
@@ -116,12 +128,22 @@ class TaskListFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+        val securityPref = SecurityPrefManager(requireContext())
+
         // Quan sát danh sách công việc tự động cập nhật
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.filteredTasks.collect { tasks ->
-                    adapter.submitList(tasks)
-                    binding.tvEmpty.visibility = if (tasks.isEmpty()) View.VISIBLE else View.GONE
+                    val curProject = securityPref.getCurrentProject()
+                    if (curProject.contains("Chưa tham gia", ignoreCase = true)) {
+                        adapter.submitList(emptyList())
+                        binding.tvEmpty.text = "Bạn chưa tham gia dự án nào.\nVui lòng bấm 'Mã mời / Đổi' ở trên để nhập mã (Ví dụ: TMDT2026) hoặc tự tạo dự án cá nhân!"
+                        binding.tvEmpty.visibility = View.VISIBLE
+                    } else {
+                        adapter.submitList(tasks)
+                        binding.tvEmpty.text = "Chưa có công việc nào trong dự án này"
+                        binding.tvEmpty.visibility = if (tasks.isEmpty()) View.VISIBLE else View.GONE
+                    }
                 }
             }
         }

@@ -1,0 +1,7 @@
+<resources>
+    <color name="bg_light">#0F172A</color>
+    <color name="card_bg">#1E293B</color>
+    <color name="text_primary">#F8FAFC</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="border">#334155</color>
+</resources>
