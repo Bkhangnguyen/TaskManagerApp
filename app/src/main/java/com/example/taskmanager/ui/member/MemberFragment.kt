@@ -20,7 +20,10 @@ class MemberFragment : Fragment() {
     private var _binding: FragmentMemberBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: MemberViewModel by viewModels()
+    private val viewModel: MemberViewModel by viewModels {
+        val app = requireActivity().application as com.example.taskmanager.TaskManagerApp
+        MemberViewModel.Factory(app.memberRepository)
+    }
     private val adapter = MemberAdapter()
 
     override fun onCreateView(

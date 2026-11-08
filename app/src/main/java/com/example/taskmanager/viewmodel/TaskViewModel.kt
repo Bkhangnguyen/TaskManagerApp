@@ -1,6 +1,7 @@
 package com.example.taskmanager.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.taskmanager.model.Task
 import com.example.taskmanager.repository.TaskRepository
@@ -12,18 +13,18 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class TaskViewModel(
-    private val repository: TaskRepository = TaskRepository()
+    private val repository: TaskRepository
 ) : ViewModel() {
 
     // Bộ lọc trạng thái hiện tại (Tất cả, Cần làm, Đang làm, Cần chỉnh sửa, Hoàn thành)
     private val _selectedStatus = MutableStateFlow("Tất cả")
     val selectedStatus: StateFlow<String> = _selectedStatus
 
-    // Từ khóa tìm kiếm
+    // Từ khóa tìm kiếm theo thời gian thực
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
-    // StateFlow kết hợp danh sách từ Repository với bộ lọc và tìm kiếm
+    // StateFlow kết hợp luồng dữ liệu từ Room Database với bộ lọc trạng thái và tìm kiếm
     val filteredTasks: StateFlow<List<Task>> = combine(
         repository.tasksFlow,
         _selectedStatus,
@@ -52,10 +53,11 @@ class TaskViewModel(
         _searchQuery.value = query
     }
 
+    // Thêm công việc mới: Thao tác ghi bất đồng bộ vào Room DB bằng Coroutines
     fun addTask(title: String, description: String, assignee: String, category: String, resultUrl: String?) {
         viewModelScope.launch {
             val newTask = Task(
-                id = System.currentTimeMillis().toInt(),
+                id = 0, // Room DB tự động sinh id tăng dần (@PrimaryKey(autoGenerate = true))
                 title = title,
                 description = description,
                 assignee = assignee.ifBlank { "Chưa phân công" },
@@ -67,6 +69,7 @@ class TaskViewModel(
         }
     }
 
+    // Cập nhật trạng thái công việc: UI tự động phản ứng đổi màu qua Flow
     fun toggleTaskStatus(taskId: Int, currentStatus: String) {
         viewModelScope.launch {
             val nextStatus = when (currentStatus) {
@@ -76,6 +79,16 @@ class TaskViewModel(
                 else -> "Cần làm"
             }
             repository.updateTaskStatus(taskId, nextStatus)
+        }
+    }
+
+    class Factory(private val repository: TaskRepository) : ViewModelProvider.Factory {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(TaskViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return TaskViewModel(repository) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
 }

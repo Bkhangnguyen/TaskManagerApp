@@ -1,19 +1,28 @@
 package com.example.taskmanager.repository
 
+import com.example.taskmanager.data.local.dao.MemberDao
+import com.example.taskmanager.data.local.entity.MemberEntity
 import com.example.taskmanager.model.Member
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 
-class MemberRepository {
+class MemberRepository(
+    private val memberDao: MemberDao
+) {
 
-    private val members = listOf(
-        Member(1, "Dương", "Trưởng nhóm / Core System", 3, "#0F766E"),
-        Member(2, "Khôi", "Product & Content", 2, "#B45309"),
-        Member(3, "Kiệt", "Kiểm thử & UI/UX", 2, "#4338CA"),
-        Member(4, "Khoa", "Giao diện & Thiết kế", 2, "#BE185D")
-    )
+    val membersFlow: Flow<List<Member>> = memberDao.getAllMembers().map { list ->
+        list.map { entity ->
+            Member(
+                id = entity.id,
+                name = entity.name,
+                role = entity.role,
+                assignedTasksCount = 2,
+                tagColorHex = entity.tagColorHex
+            )
+        }
+    }
 
-    private val _membersFlow = MutableStateFlow(members)
-    val membersFlow: Flow<List<Member>> = _membersFlow.asStateFlow()
+    suspend fun addMember(name: String, role: String, colorHex: String) {
+        memberDao.insertMember(MemberEntity(name = name, role = role, tagColorHex = colorHex))
+    }
 }

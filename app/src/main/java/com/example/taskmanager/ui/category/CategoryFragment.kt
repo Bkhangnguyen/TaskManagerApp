@@ -20,7 +20,10 @@ class CategoryFragment : Fragment() {
     private var _binding: FragmentCategoryBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: CategoryViewModel by viewModels()
+    private val viewModel: CategoryViewModel by viewModels {
+        val app = requireActivity().application as com.example.taskmanager.TaskManagerApp
+        CategoryViewModel.Factory(app.categoryRepository)
+    }
     private val adapter = CategoryAdapter()
 
     override fun onCreateView(

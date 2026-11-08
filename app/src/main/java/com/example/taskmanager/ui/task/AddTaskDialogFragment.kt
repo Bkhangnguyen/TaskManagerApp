@@ -16,7 +16,10 @@ class AddTaskDialogFragment : DialogFragment() {
     private var _binding: DialogAddTaskBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: TaskViewModel by activityViewModels()
+    private val viewModel: TaskViewModel by activityViewModels {
+        val app = requireActivity().application as com.example.taskmanager.TaskManagerApp
+        TaskViewModel.Factory(app.taskRepository)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

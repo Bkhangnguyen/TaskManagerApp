@@ -23,7 +23,10 @@ class TaskListFragment : Fragment() {
     private var _binding: FragmentTaskListBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: TaskViewModel by activityViewModels()
+    private val viewModel: TaskViewModel by activityViewModels {
+        val app = requireActivity().application as com.example.taskmanager.TaskManagerApp
+        TaskViewModel.Factory(app.taskRepository)
+    }
     private lateinit var adapter: TaskAdapter
 
     override fun onCreateView(
