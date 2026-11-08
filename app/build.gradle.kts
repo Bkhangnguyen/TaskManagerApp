@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.devtools.ksp)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -68,6 +69,16 @@ dependencies {
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
+
+    // Milestone 5: Firebase Authentication & Google Services
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+
+    // Milestone 5: Glide (Tải ảnh bất đồng bộ tối ưu bộ nhớ)
+    implementation(libs.glide)
+
+    // Milestone 5: Security Crypto (Mã hóa EncryptedSharedPreferences)
+    implementation(libs.androidx.security.crypto)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

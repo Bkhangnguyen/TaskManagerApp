@@ -1,41 +1,59 @@
 # TaskManagerApp — Ứng Dụng Quản Lý & Phân Công Tác Vụ (TMDT PM)
 
 Dự án Đồ án Môn học Lập trình Ứng dụng Di động (Android Studio - Kotlin).  
-Kiến trúc: **MVVM (Model - View - ViewModel) + View Binding + Room Database (Offline-First)**
+Kiến trúc: **Clean Architecture / MVVM + View Binding + Room Database (Offline-First) + Retrofit 2 + Firebase Auth**
 
 ---
 
 ## 📌 Phân Công Kỹ Thuật Theo Chiều Dọc (Vertical Slicing — Nhóm 3 Thành Viên)
 
-| Thành viên | Phân hệ (Module) | Thành phần kỹ thuật phụ trách |
+| Thành viên | Phân hệ (Module) | Toàn bộ thành phần kỹ thuật phụ trách (Milestones 1 – 5) |
 | :--- | :--- | :--- |
-| **Dương (Lead)** | **Task Core, Database & API** | • `AppDatabase` Singleton (@Volatile + synchronized)<br>• Phân hệ Task: `TaskEntity`, `TaskDao`, `TaskRepository`<br>• `TaskApiService` (Retrofit 2 @GET, @POST, @PUT, @DELETE)<br>• Quản lý 3 trạng thái `Resource<T>` (Loading, Success, Error)<br>• `TaskListFragment`, `TaskAdapter` (100% ViewBinding) |
-| **Khang** | **Category & Results Module** | • Phân hệ Hạng mục: `CategoryEntity`, `CategoryDao`, `CategoryRepository`<br>• `CategoryApiService` (@GET, @POST categories)<br>• Phân hệ Kết quả / Link nộp: `TaskResultEntity`, `TaskResultDao`<br>• `CategoryViewModel`, `CategoryFragment`, `CategoryAdapter`<br>• Hộp thoại thêm công việc `AddTaskDialogFragment` |
-| **Duy** | **Member & Profile Module** | • Phân hệ Thành viên: `MemberEntity`, `MemberDao`, `MemberRepository`<br>• `MemberApiService` (@GET, @POST members)<br>• `MemberViewModel`, `MemberFragment`, `MemberAdapter`<br>• `ProfileFragment` (Giao diện thông tin cá nhân & cài đặt)<br>• Hệ thống màu sắc & Theme Material 3 chuẩn Airtable |
+| **Dương (Lead)** | **Task Core, Database & API** | • `AppDatabase` Singleton (`@Volatile` + `synchronized`)<br>• Phân hệ Task: `TaskEntity`, `TaskDao`, `TaskRepository`<br>• `TaskApiService` (Retrofit 2 @GET, @POST, @PUT, @DELETE)<br>• Quản lý 3 trạng thái `Resource<T>` (Loading, Success, Error)<br>• `TaskListFragment`, `TaskAdapter` (100% ViewBinding) |
+| **Khang** | **Category, Results & Firebase** | • Phân hệ Hạng mục: `CategoryEntity`, `CategoryDao`, `CategoryRepository`<br>• Phân hệ Kết quả / Link nộp: `TaskResultEntity`, `TaskResultDao`<br>• `CategoryApiService` (@GET, @POST categories)<br>• Tích hợp **Firebase Authentication** thật (`LoginActivity`, `AuthViewModel`)<br>• `CategoryViewModel`, `CategoryFragment`, `CategoryAdapter`<br>• Hộp thoại thêm công việc `AddTaskDialogFragment` |
+| **Duy** | **Member, Security & Image Loading** | • Phân hệ Thành viên: `MemberEntity`, `MemberDao`, `MemberRepository`<br>• `MemberApiService` (@GET, @POST members)<br>• Tích hợp thư viện **Glide** tải ảnh bất đồng bộ tối ưu RAM<br>• Bảo mật lưu trữ bằng **`EncryptedSharedPreferences`**<br>• `MemberViewModel`, `MemberFragment`, `MemberAdapter`, `ProfileFragment`<br>• Cấu hình Proguard/R8 xuất bản APK Release |
 
 ---
 
-## 🚀 Các Tính Năng Hiện Có (Milestones 1, 2, 3 & 4 Hoàn Thành)
+## 🚀 Toàn Bộ Tính Năng Đã Hoàn Thành Qua 5 Cột Mốc
+
+### 1. Milestone 1: Điều hướng & Kiến trúc giao diện
+* Single-Activity Architecture (`MainActivity`) với `NavHostFragment` và **Bottom Navigation** 4 Tabs trực quan.
+* Sơ đồ luồng người dùng (User Flow) hoàn chỉnh từ Auth $\rightarrow$ Danh sách công việc $\rightarrow$ Chi tiết $\rightarrow$ Cài đặt.
+
+### 2. Milestone 2: MVVM & View Binding
 * **100% View Binding:** Loại bỏ hoàn toàn `findViewById()` trong toàn bộ Activity, Fragment và RecyclerView ViewHolder.
-* **Kiến trúc MVVM & Repository Pattern:** Tách biệt rõ ràng các tầng `ui`, `viewmodel`, `model`, `repository`, `data.local`, `data.remote`.
-* **Cơ sở dữ liệu Room Database (Offline-First):**
-  * Tích hợp 4 Entity & 4 DAO cho các phân hệ tính năng.
-  * Các thao tác ghi (Insert/Update/Delete) dùng `suspend fun`.
-  * Các thao tác đọc dữ liệu dùng `Flow<List<T>>` tự động cập nhật giao diện khi dữ liệu thay đổi.
-* **Tích hợp Web Service RESTful API (Milestone 4):**
-  * Đầy đủ quyền `INTERNET` và `ACCESS_NETWORK_STATE` trong AndroidManifest.
-  * Tích hợp thư viện **Retrofit 2 & Gson Converter** kết hợp **Kotlin Coroutines trên `Dispatchers.IO`**.
-  * Sealed Class **`Resource<T>`** xử lý trọn vẹn 3 trạng thái giao diện:
-    * `Loading`: Hiển thị `ProgressBar` quay tròn.
-    * `Success`: Nạp dữ liệu vào `RecyclerView` và lưu đệm vào Room DB.
-    * `Error`: Bắt lỗi khi mất mạng hoặc lỗi máy chủ, hiển thị thông báo lỗi kèm nút **"Thử lại" (Retry)** và tự động fallback sang dữ liệu Offline trong Room DB.
-* **Tìm kiếm & Lọc thời gian thực:** Lọc theo trạng thái (*Tất cả, Cần làm, Đang làm, Cần chỉnh sửa, Hoàn thành*) và tìm kiếm theo từ khóa.
-* **Giao diện chuẩn Material 3 & Airtable Style:** Thẻ công việc trực quan, tag màu thành viên và chip trạng thái giống bảng Airtable.
+* Tách biệt logic và dữ liệu vào tầng `ViewModel` và `Repository`, bảo toàn dữ liệu khi xoay màn hình (Configuration Changes).
+
+### 3. Milestone 3: Room Database (Offline-First Architecture)
+* 4 Entity và 4 DAO độc lập cho các phân hệ tính năng.
+* Khởi tạo **Database Singleton** (`@Volatile` + `synchronized`) với cơ chế tự động nạp dữ liệu mẫu từ bảng Airtable.
+* Toàn bộ thao tác ghi dùng `suspend fun`, thao tác đọc dùng `Flow<List<T>>` tự động phát tín hiệu cập nhật UI.
+* Kiểm thử trơn tru trên **Chế độ máy bay (Airplane Mode)**.
+
+### 4. Milestone 4: Tích hợp RESTful API với Retrofit 2 & Coroutines
+* Đầy đủ quyền `INTERNET` và `ACCESS_NETWORK_STATE`.
+* Retrofit 2 + Gson Converter + `Dispatchers.IO` kết nối API online.
+* Sealed Class **`Resource<T>`** xử lý trọn vẹn 3 trạng thái:
+  * `Loading`: Hiển thị `ProgressBar` quay tròn.
+  * `Success`: Đổ dữ liệu vào `RecyclerView` và cache vào Room DB.
+  * `Error`: Báo lỗi khi ngắt mạng, có nút **"Thử lại" (Retry)** và tự động fallback về dữ liệu Offline.
+
+### 5. Milestone 5: Firebase Authentication, Glide, Bảo mật & Release
+* **Firebase Authentication:** Màn hình Đăng ký / Đăng nhập tài khoản thật bằng Email & Mật khẩu (có nút duyệt nhanh Offline).
+* **Thư viện Glide:** Tải ảnh đại diện và hình ảnh mượt mà, chống rò rỉ bộ nhớ (Memory Leak).
+* **Bảo mật:** Mã hóa thông tin đăng nhập bằng `EncryptedSharedPreferences` (AES-256).
+* **Đóng gói xuất bản:** Cấu hình Proguard/R8 tối ưu dung lượng và bảo vệ mã nguồn.
 
 ---
 
-## 🛠 Hướng Dẫn Mở Dự Án Trên Android Studio
-1. Mở **Android Studio** $\rightarrow$ Chọn **Open**.
-2. Chọn thư mục dự án `AppMobie` (hoặc `TaskManagerApp`).
-3. Chờ Gradle đồng bộ (Sync Project with Gradle Files).
-4. Chọn máy ảo Android (AVD) hoặc cắm thiết bị thật $\rightarrow$ Bấm nút **Run (Shift + F10)**.
+## 🛠 Hướng Dẫn Mở & Build Dự Án Trên Android Studio
+1. Mở **Android Studio** $\rightarrow$ Chọn **Open** $\rightarrow$ Trỏ tới thư mục `AppMobie`.
+2. Chờ Android Studio tải các thư viện và đồng bộ Gradle (Sync Project).
+3. **Chạy ứng dụng:** Chọn máy ảo AVD hoặc thiết bị thật $\rightarrow$ Bấm nút **Run (Shift + F10)**.
+4. **Xuất file APK Release (Nộp bài Milestone 5):**
+   * Vào menu **Build** $\rightarrow$ **Generate Signed Bundle / APK...**
+   * Chọn **APK** $\rightarrow$ Bấm **Next**.
+   * Chọn tạo mới **Keystore** (hoặc chọn keystore có sẵn) $\rightarrow$ Điền mật khẩu $\rightarrow$ Bấm **Next**.
+   * Chọn build variant **release** $\rightarrow$ Bấm **Create**.
+   * File `.apk` release sẽ được sinh ra tại thư mục `app/release/app-release.apk`.

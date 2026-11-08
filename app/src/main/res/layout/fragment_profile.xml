@@ -88,5 +88,16 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Logout Button (Milestone 5) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogout"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="24dp"
+            android:textColor="#DC2626"
+            app:strokeColor="#DC2626"
+            android:text="Đăng xuất tài khoản" />
+
     </LinearLayout>
 </ScrollView>
