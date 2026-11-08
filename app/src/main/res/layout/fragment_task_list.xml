@@ -167,6 +167,16 @@
             android:layout_height="wrap_content"
             android:textColor="#DC2626"
             android:text="Thử lại" />
+
+        <ImageView
+            android:id="@+id/btnCloseError"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="4dp"
+            android:padding="2dp"
+            android:src="@drawable/ic_tasks"
+            app:tint="#DC2626"
+            android:contentDescription="Đóng thông báo" />
     </LinearLayout>
 
     <!-- Task List RecyclerView -->

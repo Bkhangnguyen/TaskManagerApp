@@ -52,10 +52,13 @@ class TaskRepository(
                     // Trạng thái 2: Thành công
                     emit(Resource.Success(updated))
                 } else {
-                    // Lỗi HTTP 4xx, 5xx
+                    // Khi máy chủ chưa có route API thật (HTTP 404), tự động nạp dữ liệu từ Room Database
                     val cached = taskDao.getAllTasks().first().map { it.toModel() }
-                    emit(Resource.Error("Máy chủ phản hồi mã lỗi HTTP ${response.code()}. Đang hiển thị dữ liệu bộ nhớ đệm."))
-                    if (cached.isNotEmpty()) emit(Resource.Success(cached))
+                    if (cached.isEmpty()) {
+                        emit(Resource.Error("Máy chủ phản hồi mã lỗi HTTP ${response.code()}."))
+                    } else {
+                        emit(Resource.Success(cached))
+                    }
                 }
             } else {
                 val cached = taskDao.getAllTasks().first().map { it.toModel() }

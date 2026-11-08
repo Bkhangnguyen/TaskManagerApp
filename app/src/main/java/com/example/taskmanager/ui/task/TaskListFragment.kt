@@ -125,6 +125,11 @@ class TaskListFragment : Fragment() {
         binding.btnRetry.setOnClickListener {
             viewModel.fetchTasksFromApi()
         }
+
+        // Nút tắt thông báo lỗi nhanh
+        binding.btnCloseError.setOnClickListener {
+            binding.layoutError.visibility = View.GONE
+        }
     }
 
     private fun observeViewModel() {
@@ -165,6 +170,12 @@ class TaskListFragment : Fragment() {
                             binding.progressBar.visibility = View.GONE
                             binding.layoutError.visibility = View.VISIBLE
                             binding.tvErrorMessage.text = state.message
+
+                            // Tự động ẩn thanh thông báo sau 3 giây để giao diện luôn sạch đẹp
+                            binding.layoutError.removeCallbacks(null)
+                            binding.layoutError.postDelayed({
+                                binding.layoutError.visibility = View.GONE
+                            }, 3500)
                         }
                     }
                 }
