@@ -1,5 +1,9 @@
 package com.example.taskmanager.ui.project
 
+import android.app.AlertDialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +19,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class ProjectManageDialog(
-    private val onProjectChanged: (String) -> Unit = {}
+    private val onProjectChanged: (projectName: String, inviteCode: String) -> Unit = { _, _ -> }
 ) : DialogFragment() {
 
     private var _binding: DialogProjectManageBinding? = null
@@ -48,6 +52,7 @@ class ProjectManageDialog(
         val userEmail = securityPref.getUserEmail() ?: "user@taskmanager.com"
 
         binding.tvCurrentActiveProject.text = "Dự án hiện tại: ${securityPref.getCurrentProject()}"
+        binding.tvActiveInviteCodeDisplay.text = "Mã mời hiện tại: ${securityPref.getCurrentInviteCode()}"
 
         binding.btnCloseDialog.setOnClickListener {
             dismiss()
@@ -65,9 +70,10 @@ class ProjectManageDialog(
                 val project = projectDao.getProjectByInviteCode(code)
                 if (project != null) {
                     securityPref.setCurrentProject(project.name)
+                    securityPref.setCurrentInviteCode(project.inviteCode)
                     userAccountDao.updateProject(userEmail, project.name)
                     Toast.makeText(requireContext(), "Đã tham gia dự án: ${project.name}!", Toast.LENGTH_SHORT).show()
-                    onProjectChanged(project.name)
+                    onProjectChanged(project.name, project.inviteCode)
                     dismiss()
                 } else {
                     Toast.makeText(requireContext(), "Mã mời '$code' không hợp lệ hoặc không tồn tại!", Toast.LENGTH_LONG).show()
@@ -90,14 +96,14 @@ class ProjectManageDialog(
                 )
                 projectDao.insertProject(newProject)
                 securityPref.setCurrentProject(personalName)
+                securityPref.setCurrentInviteCode(inviteCode)
                 userAccountDao.updateProject(userEmail, personalName)
-                Toast.makeText(requireContext(), "Đã tạo không gian riêng thành công!", Toast.LENGTH_SHORT).show()
-                onProjectChanged(personalName)
-                dismiss()
+                
+                showSuccessCodeDialog(personalName, inviteCode)
             }
         }
 
-        // 3. Tạo nhóm dự án mới (Sinh mã mời ngẫu nhiên)
+        // 3. Tạo nhóm dự án mới (Sinh mã mời ngẫu nhiên và hiển thị rõ ràng)
         binding.btnCreateNewGroupProject.setOnClickListener {
             val groupName = binding.etNewProjectName.text?.toString()?.trim().orEmpty()
             if (groupName.isBlank()) {
@@ -117,12 +123,34 @@ class ProjectManageDialog(
                 )
                 projectDao.insertProject(newProject)
                 securityPref.setCurrentProject(groupName)
+                securityPref.setCurrentInviteCode(randomCode)
                 userAccountDao.updateProject(userEmail, groupName)
-                Toast.makeText(requireContext(), "Tạo nhóm thành công! Mã mời của bạn là: $randomCode", Toast.LENGTH_LONG).show()
-                onProjectChanged(groupName)
-                dismiss()
+
+                showSuccessCodeDialog(groupName, randomCode)
             }
         }
+    }
+
+    private fun showSuccessCodeDialog(projectName: String, inviteCode: String) {
+        val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Mã mời dự án", inviteCode)
+        clipboard.setPrimaryClip(clip)
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("🎉 Tạo Dự Án Thành Công!")
+            .setMessage("Dự án: $projectName\n\nMÃ MỜI CỦA BẠN LÀ:\n👉 $inviteCode 👈\n\n(Đã tự động sao chép vào bộ nhớ tạm. Hãy gửi mã này cho bạn bè để họ nhập và tham gia vào dự án nhé!)")
+            .setPositiveButton("Đồng ý & Bắt đầu") { _, _ ->
+                onProjectChanged(projectName, inviteCode)
+                dismiss()
+            }
+            .setNeutralButton("Sao chép lại") { _, _ ->
+                clipboard.setPrimaryClip(clip)
+                Toast.makeText(requireContext(), "Đã sao chép mã: $inviteCode", Toast.LENGTH_SHORT).show()
+                onProjectChanged(projectName, inviteCode)
+                dismiss()
+            }
+            .setCancelable(false)
+            .show()
     }
 
     override fun onDestroyView() {

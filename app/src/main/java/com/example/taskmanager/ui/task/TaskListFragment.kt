@@ -86,11 +86,22 @@ class TaskListFragment : Fragment() {
 
         // Hiển thị tên dự án hiện tại trên banner
         binding.tvActiveProjectName.text = "📁 ${securityPref.getCurrentProject()}"
+        val inviteCode = securityPref.getCurrentInviteCode()
+        binding.tvCurrentInviteCode.text = "Mã mời dự án: $inviteCode"
+
+        // Nút sao chép mã mời vào bộ nhớ tạm
+        binding.btnCopyInviteCode.setOnClickListener {
+            val clipboard = requireContext().getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = android.content.ClipData.newPlainText("Mã mời dự án", inviteCode)
+            clipboard.setPrimaryClip(clip)
+            Toast.makeText(requireContext(), "Đã sao chép mã mời: $inviteCode vào bộ nhớ tạm!", Toast.LENGTH_SHORT).show()
+        }
 
         // Bấm đổi dự án / nhập mã mời / tạo nhóm
         binding.btnSwitchProject.setOnClickListener {
-            val dialog = com.example.taskmanager.ui.project.ProjectManageDialog { newProjectName ->
+            val dialog = com.example.taskmanager.ui.project.ProjectManageDialog { newProjectName, newCode ->
                 binding.tvActiveProjectName.text = "📁 $newProjectName"
+                binding.tvCurrentInviteCode.text = "Mã mời dự án: $newCode"
                 (activity as? com.example.taskmanager.MainActivity)?.updateProjectSubtitle(newProjectName)
             }
             dialog.show(childFragmentManager, "ProjectManageDialog")
@@ -130,6 +141,11 @@ class TaskListFragment : Fragment() {
         binding.btnCloseError.setOnClickListener {
             binding.layoutError.visibility = View.GONE
         }
+
+        // Bấm X trên Chip Hạng mục để xóa lọc hạng mục
+        binding.chipActiveCategory.setOnCloseIconClickListener {
+            viewModel.clearCategoryFilter()
+        }
     }
 
     private fun observeViewModel() {
@@ -148,6 +164,20 @@ class TaskListFragment : Fragment() {
                         adapter.submitList(tasks)
                         binding.tvEmpty.text = "Chưa có công việc nào trong dự án này"
                         binding.tvEmpty.visibility = if (tasks.isEmpty()) View.VISIBLE else View.GONE
+                    }
+                }
+            }
+        }
+
+        // Quan sát bộ lọc Hạng mục đang chọn
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedCategory.collect { category ->
+                    if (category.isNullOrBlank() || category == "Tất cả") {
+                        binding.chipActiveCategory.visibility = View.GONE
+                    } else {
+                        binding.chipActiveCategory.visibility = View.VISIBLE
+                        binding.chipActiveCategory.text = "Hạng mục: $category"
                     }
                 }
             }

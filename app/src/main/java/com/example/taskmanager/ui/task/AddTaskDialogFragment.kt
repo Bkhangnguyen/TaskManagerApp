@@ -41,6 +41,29 @@ class AddTaskDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Danh sách Hạng mục & Thành viên có sẵn để chọn nhanh không cần gõ phím
+        val categories = arrayOf("Báo cáo", "Nghiên cứu", "Nội dung", "Kiểm thử", "Giao diện", "UI/UX", "Quản lý / Git", "WordPress")
+        binding.etCategory.isFocusable = false
+        binding.etCategory.setOnClickListener {
+            android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Chọn Hạng Mục Công Việc")
+                .setItems(categories) { _, which ->
+                    binding.etCategory.setText(categories[which])
+                }
+                .show()
+        }
+
+        val members = arrayOf("Dương", "Khang", "Duy", "Chưa phân công")
+        binding.etAssignee.isFocusable = false
+        binding.etAssignee.setOnClickListener {
+            android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Chọn Người Phụ Trách")
+                .setItems(members) { _, which ->
+                    binding.etAssignee.setText(members[which])
+                }
+                .show()
+        }
+
         binding.btnCancel.setOnClickListener {
             dismiss()
         }

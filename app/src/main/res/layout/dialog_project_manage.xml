@@ -29,6 +29,15 @@
             android:textSize="14sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/tvActiveInviteCodeDisplay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Mã mời hiện tại: TMDT2026"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+
         <!-- Card 1: Nhập mã mời để tham gia dự án -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"

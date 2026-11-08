@@ -26,24 +26,31 @@ class TaskViewModel(
     private val _selectedStatus = MutableStateFlow("Tất cả")
     val selectedStatus: StateFlow<String> = _selectedStatus
 
+    // Bộ lọc theo Hạng mục (Báo cáo, Giao diện, Kiểm thử...)
+    private val _selectedCategory = MutableStateFlow("Tất cả")
+    val selectedCategory: StateFlow<String> = _selectedCategory.asStateFlow()
+
     // Từ khóa tìm kiếm theo thời gian thực
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
-    // StateFlow kết hợp luồng dữ liệu từ Room Database với bộ lọc trạng thái và tìm kiếm
+    // StateFlow kết hợp luồng dữ liệu từ Room Database với bộ lọc trạng thái, hạng mục và tìm kiếm
     val filteredTasks: StateFlow<List<Task>> = combine(
         repository.tasksFlow,
         _selectedStatus,
+        _selectedCategory,
         _searchQuery
-    ) { tasks, status, query ->
+    ) { tasks, status, category, query ->
         tasks.filter { task ->
             val matchStatus = if (status == "Tất cả") true else task.status.equals(status, ignoreCase = true)
+            val matchCategory = if (category == "Tất cả" || category.isNullOrBlank()) true else task.category.equals(category, ignoreCase = true)
             val matchQuery = if (query.isBlank()) true else {
                 task.title.contains(query, ignoreCase = true) ||
                 task.description.contains(query, ignoreCase = true) ||
-                task.assignee.contains(query, ignoreCase = true)
+                task.assignee.contains(query, ignoreCase = true) ||
+                task.category.contains(query, ignoreCase = true)
             }
-            matchStatus && matchQuery
+            matchStatus && matchCategory && matchQuery
         }
     }.stateIn(
         scope = viewModelScope,
@@ -53,6 +60,14 @@ class TaskViewModel(
 
     fun filterByStatus(status: String) {
         _selectedStatus.value = status
+    }
+
+    fun filterByCategory(category: String?) {
+        _selectedCategory.value = category ?: "Tất cả"
+    }
+
+    fun clearCategoryFilter() {
+        _selectedCategory.value = "Tất cả"
     }
 
     // Milestone 4: Kéo dữ liệu qua Retrofit 2 với Coroutines Dispatchers.IO và phát trạng thái Resource

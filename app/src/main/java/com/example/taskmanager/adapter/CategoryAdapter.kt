@@ -10,7 +10,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.taskmanager.databinding.ItemCategoryBinding
 import com.example.taskmanager.model.Category
 
-class CategoryAdapter : ListAdapter<Category, CategoryAdapter.CategoryViewHolder>(DiffCallback) {
+class CategoryAdapter(
+    private val onCategoryClick: (Category) -> Unit = {}
+) : ListAdapter<Category, CategoryAdapter.CategoryViewHolder>(DiffCallback) {
 
     class CategoryViewHolder(
         val binding: ItemCategoryBinding
@@ -37,6 +39,11 @@ class CategoryAdapter : ListAdapter<Category, CategoryAdapter.CategoryViewHolder
             setColor(Color.parseColor(item.colorHex))
         }
         binding.viewCategoryColor.background = colorDot
+
+        // Bấm vào Hạng mục để nhảy sang Tab Công việc và lọc theo hạng mục đó!
+        binding.root.setOnClickListener {
+            onCategoryClick(item)
+        }
     }
 
     companion object DiffCallback : DiffUtil.ItemCallback<Category>() {

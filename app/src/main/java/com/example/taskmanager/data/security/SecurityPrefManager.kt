@@ -40,6 +40,12 @@ class SecurityPrefManager(context: Context) {
         sharedPreferences.edit().putString("CURRENT_PROJECT", name).apply()
     }
 
+    fun getCurrentInviteCode(): String = sharedPreferences.getString("CURRENT_INVITE_CODE", "TMDT2026") ?: "TMDT2026"
+
+    fun setCurrentInviteCode(code: String) {
+        sharedPreferences.edit().putString("CURRENT_INVITE_CODE", code).apply()
+    }
+
     fun isDarkMode(): Boolean = sharedPreferences.getBoolean("DARK_MODE", false)
 
     fun setDarkMode(enabled: Boolean) {
