@@ -52,17 +52,13 @@ class TaskAdapter(
                     setColor(ContextCompat.getColor(context, R.color.tag_duong))
                     binding.tvAssignee.setTextColor(ContextCompat.getColor(context, R.color.tag_duong_text))
                 }
-                "Khôi" -> {
+                "Khang" -> {
                     setColor(ContextCompat.getColor(context, R.color.tag_khoi))
                     binding.tvAssignee.setTextColor(ContextCompat.getColor(context, R.color.tag_khoi_text))
                 }
-                "Kiệt" -> {
+                "Duy" -> {
                     setColor(ContextCompat.getColor(context, R.color.tag_kiet))
                     binding.tvAssignee.setTextColor(ContextCompat.getColor(context, R.color.tag_kiet_text))
-                }
-                "Khoa" -> {
-                    setColor(ContextCompat.getColor(context, R.color.tag_khoa))
-                    binding.tvAssignee.setTextColor(ContextCompat.getColor(context, R.color.tag_khoa_text))
                 }
                 else -> {
                     setColor(Color.parseColor("#E2E8F0"))

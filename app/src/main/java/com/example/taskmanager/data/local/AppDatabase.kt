@@ -87,13 +87,12 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                 )
 
-                // 2. Nạp thành viên (Members)
+                // 2. Nạp thành viên (3 thành viên: Dương, Khang, Duy)
                 memberDao.insertAll(
                     listOf(
-                        MemberEntity(name = "Dương", role = "Trưởng nhóm / Core System", tagColorHex = "#0F766E"),
-                        MemberEntity(name = "Khôi", role = "Product & Content", tagColorHex = "#B45309"),
-                        MemberEntity(name = "Kiệt", role = "Kiểm thử & UI/UX", tagColorHex = "#4338CA"),
-                        MemberEntity(name = "Khoa", role = "Giao diện & Thiết kế", tagColorHex = "#BE185D")
+                        MemberEntity(name = "Dương", role = "Trưởng nhóm / Task Core & DB", tagColorHex = "#0F766E"),
+                        MemberEntity(name = "Khang", role = "Category & Results Module", tagColorHex = "#B45309"),
+                        MemberEntity(name = "Duy", role = "Member & Profile Module", tagColorHex = "#4338CA")
                     )
                 )
 
@@ -111,7 +110,7 @@ abstract class AppDatabase : RoomDatabase() {
                         TaskEntity(
                             title = "Nghiên cứu website Digital Art",
                             description = "Tìm 5 website đang bán Digital Art, Digital Download hoặc artwork online...",
-                            assignee = "Khôi",
+                            assignee = "Khang",
                             category = "Nghiên cứu",
                             status = "Hoàn thành",
                             resultUrl = "https://byvn.net/hs5v"
@@ -119,7 +118,7 @@ abstract class AppDatabase : RoomDatabase() {
                         TaskEntity(
                             title = "Chuẩn bị dữ liệu 15-20 Digital Art",
                             description = "Chuẩn bị dữ liệu mẫu để nhập WooCommerce. Mỗi sản phẩm bắt buộc có hình ảnh và mô tả...",
-                            assignee = "Khôi",
+                            assignee = "Khang",
                             category = "Nội dung",
                             status = "Hoàn thành",
                             resultUrl = "https://byvn.net/cDkq"
@@ -127,7 +126,7 @@ abstract class AppDatabase : RoomDatabase() {
                         TaskEntity(
                             title = "Tạo checklist test WooCommerce",
                             description = "Chuẩn bị checklist dùng để test từ tuần 2. Các nhóm cần test: đặt hàng, giỏ hàng, thanh toán...",
-                            assignee = "Kiệt",
+                            assignee = "Duy",
                             category = "Kiểm thử",
                             status = "Hoàn thành",
                             resultUrl = "https://docs.google.com"
@@ -135,7 +134,7 @@ abstract class AppDatabase : RoomDatabase() {
                         TaskEntity(
                             title = "Nghiên cứu UI Digital Art",
                             description = "Tìm 5 website có giao diện phù hợp với concept Digital Art...",
-                            assignee = "Khoa",
+                            assignee = "Duy",
                             category = "Giao diện",
                             status = "Hoàn thành",
                             resultUrl = "https://docs.google.com"
@@ -143,7 +142,7 @@ abstract class AppDatabase : RoomDatabase() {
                         TaskEntity(
                             title = "Tạo Moodboard / Style Guide ban đầu",
                             description = "Đề xuất style tổng thể của website: Bảng màu, typography, phong cách thiết kế...",
-                            assignee = "Khoa",
+                            assignee = "Duy",
                             category = "Giao diện",
                             status = "Hoàn thành",
                             resultUrl = "https://www.figma.com"
@@ -151,7 +150,7 @@ abstract class AppDatabase : RoomDatabase() {
                         TaskEntity(
                             title = "Wireframe 4 màn hình chính",
                             description = "Thiết kế wireframe cơ bản: Trang chủ, Danh mục, Chi tiết sản phẩm, Giỏ hàng...",
-                            assignee = "Kiệt",
+                            assignee = "Duy",
                             category = "UI/UX",
                             status = "Hoàn thành",
                             resultUrl = "https://www.figma.com"

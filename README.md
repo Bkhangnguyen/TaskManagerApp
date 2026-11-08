@@ -5,23 +5,26 @@ Kiến trúc: **MVVM (Model - View - ViewModel) + View Binding + Room Database (
 
 ---
 
-## 📌 Phân Công Kỹ Thuật Theo Chiều Dọc (Vertical Slicing)
+## 📌 Phân Công Kỹ Thuật Theo Chiều Dọc (Vertical Slicing — Nhóm 3 Thành Viên)
 
-| Thành viên | Phân hệ (Module) | Thành phần phụ trách |
+| Thành viên | Phân hệ (Module) | Thành phần kỹ thuật phụ trách |
 | :--- | :--- | :--- |
-| **Dương (Lead)** | **Task Core & System** | `TaskViewModel`, `TaskListFragment`, `TaskAdapter`, Base Navigation, `AppDatabase` Singleton |
-| **Khôi** | **Category Module** | `CategoryViewModel`, `CategoryFragment`, `CategoryAdapter`, `CategoryRepository` |
-| **Kiệt** | **Member Module** | `MemberViewModel`, `MemberFragment`, `MemberAdapter`, `MemberRepository` |
-| **Khoa** | **Detail & Task Results** | `AddTaskDialogFragment`, `ProfileFragment`, Theme & Color System |
+| **Dương (Lead)** | **Task Core & Database Singleton** | • Xây dựng `AppDatabase` Singleton (@Volatile + synchronized)<br>• Phân hệ Task: `TaskEntity`, `TaskDao`, `TaskRepository`<br>• `TaskViewModel` (StateFlow & Coroutines)<br>• `TaskListFragment`, `TaskAdapter` (100% ViewBinding) |
+| **Khang** | **Category & Results Module** | • Phân hệ Hạng mục: `CategoryEntity`, `CategoryDao`, `CategoryRepository`<br>• Phân hệ Kết quả / Link nộp: `TaskResultEntity`, `TaskResultDao`<br>• `CategoryViewModel`, `CategoryFragment`, `CategoryAdapter`<br>• Hộp thoại thêm công việc `AddTaskDialogFragment` |
+| **Duy** | **Member & Profile Module** | • Phân hệ Thành viên: `MemberEntity`, `MemberDao`, `MemberRepository`<br>• `MemberViewModel`, `MemberFragment`, `MemberAdapter`<br>• `ProfileFragment` (Giao diện thông tin cá nhân & cài đặt)<br>• Hệ thống màu sắc & Theme Material 3 chuẩn Airtable |
 
 ---
 
-## 🚀 Các Tính Năng Hiện Có (Milestone 2 Hoàn Thành)
-* **100% View Binding:** Loại bỏ hoàn toàn `findViewById()`.
-* **Kiến trúc MVVM chuẩn mực:** Tách biệt rõ ràng các tầng `ui`, `viewmodel`, `model`, `repository`, `adapter`.
-* **StateFlow & Coroutines:** Dữ liệu phản ứng tự động (Reactive Flow), giữ nguyên trạng thái khi xoay màn hình (Configuration Changes).
+## 🚀 Các Tính Năng Hiện Có (Milestone 1, 2 & 3 Hoàn Thành)
+* **100% View Binding:** Loại bỏ hoàn toàn `findViewById()` trong toàn bộ Activity, Fragment và RecyclerView ViewHolder.
+* **Kiến trúc MVVM chuẩn mực:** Tách biệt rõ ràng các tầng `ui`, `viewmodel`, `model`, `repository`, `data.local`.
+* **Cơ sở dữ liệu Room Database (Offline-First):**
+  * Tích hợp 4 Entity & 4 DAO cho các phân hệ tính năng.
+  * Các thao tác ghi (Insert/Update/Delete) dùng `suspend fun`.
+  * Các thao tác đọc dữ liệu dùng `Flow<List<T>>` tự động phản ứng và cập nhật giao diện khi dữ liệu thay đổi.
+  * Kiểm thử mượt mà trên Chế độ máy bay (Airplane Mode).
 * **Tìm kiếm & Lọc thời gian thực:** Lọc theo trạng thái (*Tất cả, Cần làm, Đang làm, Cần chỉnh sửa, Hoàn thành*) và tìm kiếm theo từ khóa.
-* **Giao diện chuẩn Material 3 & Airtable Style:** Màu sắc, thẻ công việc và chip trạng thái mô phỏng trực quan theo bảng phân công Airtable.
+* **Giao diện chuẩn Material 3 & Airtable Style:** Thẻ công việc trực quan, tag màu thành viên và chip trạng thái giống bảng Airtable.
 
 ---
 
