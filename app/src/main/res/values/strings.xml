@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TaskManager PM</string>
+    <string name="title_tasks">Công việc</string>
+    <string name="title_categories">Hạng mục</string>
+    <string name="title_members">Thành viên</string>
+    <string name="title_profile">Cá nhân</string>
+    <string name="add_task">Thêm công việc</string>
+    <string name="task_detail">Chi tiết công việc</string>
+</resources>
